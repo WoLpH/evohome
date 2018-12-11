@@ -20,7 +20,7 @@ from homeassistant.components.climate import (
     SUPPORT_TARGET_TEMPERATURE,
     ClimateDevice
 )
-from homeassistant.components.evohome import (
+from custom_components.evohome import (
     DATA_EVOHOME, DISPATCHER_EVOHOME,
     CONF_LOCATION_IDX, SCAN_INTERVAL_DEFAULT,
     EVO_PARENT, EVO_CHILD,

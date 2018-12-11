@@ -19,7 +19,7 @@ from homeassistant.components.water_heater import (
     SUPPORT_AWAY_MODE, SUPPORT_TARGET_TEMPERATURE, SUPPORT_OPERATION_MODE,
     WaterHeaterDevice,
 )
-from homeassistant.components.evohome import (
+from custom_components.evohome import (
     DATA_EVOHOME, DISPATCHER_EVOHOME,
     CONF_LOCATION_IDX, SCAN_INTERVAL_DEFAULT,
     CONF_DHW_TEMP, DHW_TEMP_DEFAULT, DHW_TEMP_MAX, DHW_TEMP_MIN,
