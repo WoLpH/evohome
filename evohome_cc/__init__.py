@@ -8,7 +8,7 @@ https://github.com/zxdavb/evohome/
 """
 # pylint: disable=deprecated-method; ZXDEL
 
-__version__ = '0.9.6'
+__version__ = '0.9.7'
 
 # Glossary:
 #   TCS - temperature control system (a.k.a. Controller, Parent), which can
@@ -41,8 +41,8 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.helpers.entity import Entity
 # from homeassistant.helpers.temperature import display_temp as show_temp
 
-# QUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/debug-version.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
-REQUIREMENTS = ['evohomeclient==0.2.8']
+REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/improve_debug.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
+# REQUIREMENTS = ['evohomeclient==0.2.8']
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,17 +69,19 @@ CONF_AWAY_TEMP = 'away_temp'
 CONF_OFF_TEMP = 'off_temp'
 CONF_DHW_TEMP = 'dhw_target_temp'
 
-# Validation of the user's configuration.
-CV_FLOAT1 = vol.All(vol.Coerce(float), vol.Range(min=5, max=28))
-CV_FLOAT2 = vol.All(vol.Coerce(float), vol.Range(min=35, max=85))
-
 CONF_REFRESH_TOKEN = 'refresh_token'
 CONF_ACCESS_TOKEN = 'access_token'
 CONF_ACCESS_TOKEN_EXPIRES = 'access_token_expires'
 
-CONF_SECRETS = [CONF_USERNAME, CONF_PASSWORD,
-                CONF_REFRESH_TOKEN,
-                CONF_ACCESS_TOKEN, CONF_ACCESS_TOKEN_EXPIRES]
+CONF_SECRETS = [
+    CONF_USERNAME, CONF_PASSWORD,
+    CONF_REFRESH_TOKEN,
+    CONF_ACCESS_TOKEN, CONF_ACCESS_TOKEN_EXPIRES
+]
+
+# Validation of the user's configuration.
+CV_FLOAT1 = vol.All(vol.Coerce(float), vol.Range(min=5, max=28))
+CV_FLOAT2 = vol.All(vol.Coerce(float), vol.Range(min=35, max=85))
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -194,7 +196,6 @@ def setup(hass, hass_config):
         minutes=(scan_interval.total_seconds() + 59) // 60)
 
     if _LOGGER.isEnabledFor(logging.DEBUG):  # then redact username, password
-#       tmp = {k: evo_data['params'][k] for k not in CONF_SECRETS}
         tmp = dict(evo_data['params'])
         for parameter in CONF_SECRETS:
             tmp[parameter] = 'REDACTED' if tmp[parameter] else None
@@ -217,22 +218,22 @@ def setup(hass, hass_config):
             access_token_expires, '%Y-%m-%d %H:%M:%S')
 
     try:
-        _LOGGER.warn("refresh_token: %s", refresh_token)                         # TODO: debug code, delete me
-        _LOGGER.warn("access_token: %s", access_token)                           # TODO: debug code, delete me
-        _LOGGER.warn("access_token_expires: %s", access_token_expires)           # TODO: debug code, delete me
+        _LOGGER.info("refresh_token: %s", refresh_token)                         # TODO: debug code, delete me
+        _LOGGER.info("access_token: %s", access_token)                           # TODO: debug code, delete me
+        _LOGGER.info("access_token_expires: %s", access_token_expires)           # TODO: debug code, delete me
 
         client = evo_data['client'] = EvohomeClient(
             evo_data['params'][CONF_USERNAME],
             evo_data['params'][CONF_PASSWORD],
-#           refresh_token=refresh_token,
-#           access_token=access_token,
-#           access_token_expires=access_token_expires,
+            # refresh_token=refresh_token,
+            # access_token=access_token,
+            # access_token_expires=access_token_expires,
             debug=False
         )
 
-        # _LOGGER.warn("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
-        # _LOGGER.warn("access_token: %s", client.access_token)                    # TODO: debug code, delete me
-        # _LOGGER.warn("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
+        # _LOGGER.info("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
+        # _LOGGER.info("access_token: %s", client.access_token)                    # TODO: debug code, delete me
+        # _LOGGER.info("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
 
     except requests.exceptions.ConnectionError as err:
         _LOGGER.error(
@@ -287,7 +288,6 @@ def setup(hass, hass_config):
 
     # Redact any installation data we'll never need
     for loc in client.installation_info:
-        loc['locationInfo']['locationId'] = 'REDACTED'
         loc['locationInfo']['locationOwner'] = 'REDACTED'
         loc['locationInfo']['streetAddress'] = 'REDACTED'
         loc['locationInfo']['city'] = 'REDACTED'
@@ -375,7 +375,7 @@ class EvoDevice(Entity):
     @callback
     def _connect(self, packet):
         """Process a dispatcher connect."""
-#       _LOGGER.debug("_connect(%s): got packet %s", self._id, packet)
+#       _LOGGER.debug("_connect(%s): got packet %s", self._id + " [" + self._name + "]", packet)
 
         if packet['to'] & self._type and packet['signal'] == 'refresh':
             # for all entity types this must have force_refresh=True
@@ -450,13 +450,13 @@ class EvoDevice(Entity):
     @property
     def name(self) -> str:
         """Return the name to use in the frontend UI."""
-        _LOGGER.debug("name(%s) = %s", self._id, self._name)                      # noqa: E501; pylint: disable=line-too-long; ZXDEL
+        _LOGGER.debug("name(%s) = %s", self._id + " [" + self._name + "]", self._name)                      # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._name
 
     @property
     def icon(self):
         """Return the icon to use in the frontend UI."""
-#       _LOGGER.debug("icon(%s) = %s", self._id, self._icon)                     # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("icon(%s) = %s", self._id + " [" + self._name + "]", self._icon)                     # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._icon
 
     @property
@@ -466,7 +466,7 @@ class EvoDevice(Entity):
         The evohome Controller will inform its children when to update(),
         evohome child devices should never be polled.
         """
-#       _LOGGER.debug("should_poll(%s) = %s", self._id, self._type == EVO_PARENT)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("should_poll(%s) = %s", self._id + " [" + self._name + "]", self._type == EVO_PARENT)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._type == EVO_PARENT
 
     @property
@@ -507,14 +507,14 @@ class EvoDevice(Entity):
             _LOGGER.warning(
                 "available(%s) = %s (debug code %s), "
                 "self._status = %s, self._timers = %s",
-                self._id,
+                self._id + " [" + self._name + "]",
                 self._available,
                 debug_code,
                 self._status,
                 self._timers
             )
 
-#       _LOGGER.debug("available(%s) = %s", self._id, self._available)            # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("available(%s) = %s", self._id + " [" + self._name + "]", self._available)            # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._available
 
     @property
@@ -525,7 +525,7 @@ class EvoDevice(Entity):
 # different - this will allow tight integration with the HA landscape e.g.
 # Alexa/Google integration
 #       feats = self._supported_features
-#       _LOGGER.debug("supported_features(%s) = %s", self._id, feats)            # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("supported_features(%s) = %s", self._id + " [" + self._name + "]", feats)            # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._supported_features
 
     @property
@@ -535,13 +535,13 @@ class EvoDevice(Entity):
         Note that, for evohome, the operating mode is determined by - but not
         equivalent to - the last operation (from the operation list).
         """
-        _LOGGER.debug("operation_list(%s) = %s", self._id, self._operation_list)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("operation_list(%s) = %s", self._id + " [" + self._name + "]", self._operation_list)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._operation_list
 
     @property
     def temperature_unit(self):
         """Return the temperature unit to use in the frontend UI."""
-#       _LOGGER.debug("temperature_unit(%s) = %s", self._id, TEMP_CELSIUS)       # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("temperature_unit(%s) = %s", self._id + " [" + self._name + "]", TEMP_CELSIUS)       # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return TEMP_CELSIUS
 
     @property
@@ -556,7 +556,7 @@ class EvoDevice(Entity):
         elif self._type & EVO_DHW:
             precision = PRECISION_WHOLE
 
-#       _LOGGER.debug("precision(%s) = %s", self._id, precision)                 # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("precision(%s) = %s", self._id + " [" + self._name + "]", precision)                 # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return precision
 
     @property
@@ -572,7 +572,7 @@ class EvoDevice(Entity):
         else:  # self._type & EVO_DHW
             current_operation = self._status['stateStatus']['mode']
 
-        _LOGGER.debug("current_operation(%s) = %s", self._id, current_operation)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("current_operation(%s) = %s", self._id + " [" + self._name + "]", current_operation)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return current_operation
 
     @property
@@ -588,7 +588,7 @@ class EvoDevice(Entity):
             temp = self._config['setpointCapabilities']['minHeatSetpoint']
         elif self._type & EVO_DHW:
             temp = 35
-#       _LOGGER.debug("min_temp(%s) = %s", self._id, temp)                       # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("min_temp(%s) = %s", self._id + " [" + self._name + "]", temp)                       # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return temp
 
     @property
@@ -604,7 +604,7 @@ class EvoDevice(Entity):
             temp = self._config['setpointCapabilities']['maxHeatSetpoint']
         elif self._type & EVO_DHW:
             temp = 85
-#       _LOGGER.debug("max_temp(%s) = %s", self._id, temp)                       # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("max_temp(%s) = %s", self._id + " [" + self._name + "]", temp)                       # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return temp
 
 
@@ -683,7 +683,7 @@ class EvoChildDevice(EvoDevice):
 
 # TBD: remove this
         # insert day_and_time of the switchpoint for those who want it
-        switchpoint['DateAndTime'] = switchpoint_date.strftime('%Y/%m/%d') + \
+        switchpoint['DateAndTime'] = switchpoint_date.strftime('%Y-%m-%d') + \
             " " + switchpoint['TimeOfDay']
 
         _LOGGER.warn(
@@ -700,7 +700,7 @@ class EvoChildDevice(EvoDevice):
             switchpoint = self._switchpoint(next_switchpoint=True)
             # convert back to a datetime object
             until = datetime.strptime(
-                switchpoint['DateAndTime'], '%Y/%m/%d %H:%M:%S'
+                switchpoint['DateAndTime'], '%Y-%m-%d %H:%M:%S'
             )  # 'DateAndTime': '2019/01/30 19:10:00'
         else:
             # there are no schedules, so use an hour from now
@@ -736,7 +736,7 @@ class EvoChildDevice(EvoDevice):
             data['switchpoints']['next'] = \
                 self._switchpoint(next_switchpoint=True)
 
-        _LOGGER.debug("device_state_attributes(%s) = %s", self._id, data)        # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("device_state_attributes(%s) = %s", self._id + " [" + self._name + "]", data)        # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return data
 
     def async_set_operation_mode(self, operation_mode):
@@ -766,10 +766,10 @@ class EvoChildDevice(EvoDevice):
         if curr_temp is None:
             _LOGGER.debug(
                 "current_temperature(%s) - is unavailable",
-                self._id
+                self._id + " [" + self._name + "]"
             )
 
-        _LOGGER.debug("current_temperature(%s) = %s", self._id, curr_temp)        # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("current_temperature(%s) = %s", self._id + " [" + self._name + "]", curr_temp)        # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return curr_temp
 
     def update(self):

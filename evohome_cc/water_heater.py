@@ -16,7 +16,7 @@ import logging
 import requests.exceptions
 
 # from homeassistant.components.climate import (
-    # ClimateDevice
+#    ClimateDevice
 # )
 from homeassistant.components.water_heater import (
     # SUPPORT_AWAY_MODE, SUPPORT_TARGET_TEMPERATURE,
@@ -24,14 +24,14 @@ from homeassistant.components.water_heater import (
     WaterHeaterDevice
 )
 from homeassistant.const import (
-#   CONF_SCAN_INTERVAL,
+    # CONF_SCAN_INTERVAL,
     STATE_OFF, STATE_ON,
-#   ATTR_TEMPERATURE,
+    # ATTR_TEMPERATURE,
 )
-from custom_components.evohome_cc import (
+from . import (
     # STATE_AUTO, STATE_ECO, STATE_MANUAL,
 
-    DATA_EVOHOME, DISPATCHER_EVOHOME,
+    DATA_EVOHOME,  # DISPATCHER_EVOHOME,
     CONF_LOCATION_IDX, CONF_USE_HEURISTICS, CONF_USE_SCHEDULES,
     # CONF_AWAY_TEMP, CONF_HIGH_PRECISION, CONF_OFF_TEMP,
     CONF_DHW_TEMP, DHW_STATES,
@@ -41,10 +41,11 @@ from custom_components.evohome_cc import (
 
     EVO_AWAY,
     # EVO_RESET, EVO_AUTO, EVO_AUTOECO, EVO_DAYOFF, EVO_CUSTOM, EVO_HEATOFF,
-    EVO_FOLLOW, EVO_TEMPOVER, EVO_PERMOVER, EVO_FROSTMODE,
+    EVO_FOLLOW, EVO_TEMPOVER,  # EVO_PERMOVER, EVO_FROSTMODE,
 
-    TCS_STATE_TO_HA, HA_STATE_TO_TCS, TCS_OP_LIST,
-    ZONE_STATE_TO_HA, HA_STATE_TO_ZONE, ZONE_OP_LIST,
+    # TCS_STATE_TO_HA, HA_STATE_TO_TCS, TCS_OP_LIST,
+    # ZONE_STATE_TO_HA, HA_STATE_TO_ZONE,
+    ZONE_OP_LIST,
 
     # EvoDevice,
     EvoChildDevice,
@@ -91,18 +92,14 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
         self._supported_features = \
             SUPPORT_OPERATION_MODE
 
-        _LOGGER.debug(
-            "__init__(%s), self._config = %s",
-            self._id + " [" + self._name + "]",
-            self._config
-        )
+        _LOGGER.debug("__init__(%s), self._config = %s", self._id + " [" + self._name + "]", self._config)
 
     @property
     def target_temperature(self):
         """TBD: Return None, as there is no target temp exposed via the api."""
         temp = self._params[CONF_DHW_TEMP]
 
-        _LOGGER.debug("target_temperature(%s) = %s", self._id, temp)
+        _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", temp)
         return temp
 
     def _set_dhw_state(self, state=None, mode=None, until=None):
@@ -119,13 +116,7 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
             - next setpoint for TemporaryOverride if using schedules
             - ignored for PermanentOverride
         """
-        _LOGGER.warn(
-            "_set_dhw_state(%s): state=%s, mode=%s, until=%s",
-            self._id,
-            state,
-            mode,
-            until
-        )
+        _LOGGER.warn("_set_dhw_state(%s): state=%s, mode=%s, until=%s", self._id + " [" + self._name + "]", state, mode, until)
 
         if state is None:
             state = self._status['stateStatus']['state']
@@ -216,7 +207,7 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
         """Return True if DHW is on (albeit regulated by thermostat)."""
         is_on = (self.state == DHW_STATES[STATE_ON])
 
-        _LOGGER.debug("is_on(%s) = %s", self._id, is_on)
+        _LOGGER.debug("is_on(%s) = %s", self._id + " [" + self._name + "]", is_on)
         return is_on
 
     def turn_on(self):
@@ -224,12 +215,7 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
         mode = EVO_TEMPOVER
         until = None
 
-        _LOGGER.debug(
-            "turn_on(%s, mode=%s, until=%s)",
-            self._id,
-            mode,
-            until
-        )
+        _LOGGER.debug("turn_on(%s, mode=%s, until=%s)", self._id + " [" + self._name + "]", mode, until)
 
         self._set_dhw_state(DHW_STATES[STATE_ON], mode, until)
 
@@ -238,22 +224,13 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
         mode = EVO_TEMPOVER
         until = None
 
-        _LOGGER.debug(
-            "turn_off(%s, mode=%s, until=%s)",
-            self._id,
-            mode,
-            until
-        )
+        _LOGGER.debug("turn_off(%s, mode=%s, until=%s)", self._id + " [" + self._name + "]", mode, until)
 
         self._set_dhw_state(DHW_STATES[STATE_OFF], mode, until)
 
     def set_operation_mode(self, operation_mode):
         """Set new operation mode for a DHW controller."""
-        _LOGGER.debug(
-            "set_operation_mode(%s, operation_mode=%s)",
-            self._id,
-            operation_mode
-        )
+#       _LOGGER.debug("set_operation_mode(%s, operation_mode=%s)", self._id + " [" + self._name + "]", operation_mode )
 
 # FollowSchedule - return to scheduled target temp (indefinitely)
         if operation_mode == EVO_FOLLOW:

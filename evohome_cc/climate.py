@@ -26,20 +26,23 @@ from homeassistant.const import (
     ATTR_TEMPERATURE,
 )
 from homeassistant.helpers.dispatcher import async_dispatcher_send
-from custom_components.evohome_cc import (
-    STATE_AUTO, STATE_ECO, STATE_MANUAL,
+from . import (
+    # STATE_AUTO, STATE_ECO, STATE_MANUAL,
 
     DATA_EVOHOME, DISPATCHER_EVOHOME,
     CONF_LOCATION_IDX, CONF_HIGH_PRECISION, CONF_USE_HEURISTICS,
     CONF_USE_SCHEDULES, CONF_AWAY_TEMP, CONF_OFF_TEMP,
 
-    GWS, TCS, EVO_PARENT, EVO_CHILD, EVO_ZONE, EVO_DHW,
+    GWS, TCS, EVO_PARENT, EVO_CHILD,
+    # EVO_ZONE, EVO_DHW,
 
     EVO_RESET, EVO_AUTO, EVO_AUTOECO, EVO_AWAY, EVO_DAYOFF, EVO_CUSTOM,
     EVO_HEATOFF, EVO_FOLLOW, EVO_TEMPOVER, EVO_PERMOVER, EVO_FROSTMODE,
 
-    TCS_STATE_TO_HA, HA_STATE_TO_TCS, TCS_OP_LIST,
-    ZONE_STATE_TO_HA, HA_STATE_TO_ZONE, ZONE_OP_LIST,
+    TCS_STATE_TO_HA,
+    # HA_STATE_TO_TCS, TCS_OP_LIST,
+    # ZONE_STATE_TO_HA, HA_STATE_TO_ZONE,
+    ZONE_OP_LIST,
 
     EvoDevice, EvoChildDevice,
 )
@@ -144,7 +147,7 @@ class EvoZone(EvoChildDevice, ClimateDevice):
         # Optionally, use heuristics to override reported state (mode)
         if self._params[CONF_USE_HEURISTICS]:
             if self._status['setpointStatus']['targetHeatTemperature'] == \
-                self.min_temp:
+                    self.min_temp:
                 if zone_op_mode == EVO_TEMPOVER:
                     # TRV turned to Off, or ?OpenWindowMode?
                     state = EVO_FROSTMODE + " (Off?)"
@@ -478,13 +481,13 @@ class EvoZone(EvoChildDevice, ClimateDevice):
                 temp = max(self._params[CONF_OFF_TEMP], self.min_temp)
 
             if self.current_operation == EVO_FOLLOW and temp != \
-                self._status['setpointStatus']['targetHeatTemperature']:
+                    self._status['setpointStatus']['targetHeatTemperature']:
                 _LOGGER.warning(
                     "'targetHeatTemperature'(%s) = %s via heuristics "
                     "(via api = %s) - "
                     "if you can determine the cause of this discrepancy, "
                     "please consider submitting an issue via github",
-                    self._id,
+                    self._id + " [" + self._name + "]",
                     temp,
                     self._status['setpointStatus']['targetHeatTemperature']
                 )
@@ -492,13 +495,13 @@ class EvoZone(EvoChildDevice, ClimateDevice):
                 _LOGGER.debug(
                     "target_temperature(%s) = %s, via heuristics "
                     "(via api = %s)",
-                    self._id,
+                    self._id + " [" + self._name + "]",
                     temp,
                     self._status['setpointStatus']['targetHeatTemperature']
-                    )
+                )
 
         else:
-            _LOGGER.debug("target_temperature(%s) = %s", self._id, temp)
+            _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", temp)
         return temp
 
     @property
@@ -514,12 +517,12 @@ class EvoZone(EvoChildDevice, ClimateDevice):
 
     def turn_off(self):
         """Turn device of."""
-        _LOGGER.debug("turn_off(%s)", self._id)
+        _LOGGER.debug("turn_off(%s)", self._id + " [" + self._name + "]")
         self._set_temperature(self.min_temp, until=None)
 
     def turn_on(self):
         """Turn device on."""
-        _LOGGER.debug("turn_on(%s)", self._id)
+        _LOGGER.debug("turn_on(%s)", self._id + " [" + self._name + "]")
         self.set_operation_mode(EVO_FOLLOW)
 
 
@@ -582,14 +585,14 @@ class EvoController(EvoDevice, ClimateDevice):
         else:  # usually = self.current_operation
             state = self.current_operation
 
-        _LOGGER.debug("state(%s) = %s", self._id, state)
+        _LOGGER.debug("state(%s) = %s", self._id + " [" + self._name + "]", state)
         return state
 
     @property
     def is_away_mode_on(self):
         """Return true if away mode is on."""
         away_mode = self._status['systemModeStatus']['mode'] == EVO_AWAY
-        _LOGGER.debug("is_away_mode_on(%s) = %s", self._id, away_mode)
+        _LOGGER.debug("is_away_mode_on(%s) = %s", self._id + " [" + self._name + "]", away_mode)
         return away_mode
 
     def async_set_operation_mode(self, operation_mode):
@@ -648,7 +651,7 @@ class EvoController(EvoDevice, ClimateDevice):
                     self._id,
                     self._status['systemModeStatus']['mode'],
                     operation_mode
-                    )
+                )
                 self._status['systemModeStatus']['mode'] = operation_mode
                 self.schedule_update_ha_state(force_refresh=False)
         else:
@@ -666,7 +669,7 @@ class EvoController(EvoDevice, ClimateDevice):
             _LOGGER.debug(
                 "set_operation_mode(): Using heuristics to change "
                 "child's operating modes",
-                )
+            )
 
             for zone in self._status['zones']:
                 if operation_mode == EVO_CUSTOM:
@@ -714,7 +717,7 @@ class EvoController(EvoDevice, ClimateDevice):
 
     def turn_away_mode_on(self):
         """Turn away mode on."""
-        _LOGGER.debug("turn_away_mode_on(%s)", self._id)
+        _LOGGER.debug("turn_away_mode_on(%s)", self._id + " [" + self._name + "]")
         self.set_operation_mode(EVO_AWAY)
 
     def async_turn_away_mode_off(self):
@@ -727,7 +730,7 @@ class EvoController(EvoDevice, ClimateDevice):
 
     def turn_away_mode_off(self):
         """Turn away mode off."""
-        _LOGGER.debug("turn_away_mode_off(%s)", self._id)
+        _LOGGER.debug("turn_away_mode_off(%s)", self._id + " [" + self._name + "]")
         self.set_operation_mode(EVO_AUTO)
 
     def _update_state_data(self, evo_data):
@@ -765,7 +768,7 @@ class EvoController(EvoDevice, ClimateDevice):
             "self._timers = %s, evo_data['timers'] = %s",
             self._timers,
             evo_data['timers']
-            )
+        )
 
     # 2. AFTER obtaining state data, do we need to increase precision of temps?
         if self._params[CONF_HIGH_PRECISION] and \
@@ -922,7 +925,7 @@ class EvoController(EvoDevice, ClimateDevice):
                  for zone in self._status['zones']]
         avg_temp = round(sum(temps) / len(temps), 1) if temps else None
 
-        _LOGGER.debug("target_temperature(%s) = %s", self._id, avg_temp)
+#       _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", avg_temp)
         return avg_temp
 
     @property
@@ -934,5 +937,5 @@ class EvoController(EvoDevice, ClimateDevice):
         temps = [zone['temperatureStatus']['temperature'] for zone in tmp_dict]
         avg_temp = round(sum(temps) / len(temps), 1) if temps else None
 
-        _LOGGER.debug("current_temperature(%s) = %s", self._id, avg_temp)
+#       _LOGGER.debug("current_temperature(%s) = %s", self._id + " [" + self._name + "]", avg_temp)
         return avg_temp
