@@ -216,10 +216,10 @@ def setup(hass, hass_config):
         client = evo_data['client'] = EvohomeClient(
             evo_data['params'][CONF_USERNAME],
             evo_data['params'][CONF_PASSWORD],
-            refresh_token=evo_data['params'][CONF_REFRESH_TOKEN],
-            access_token=evo_data['params'][CONF_ACCESS_TOKEN],
-            access_token_expires=evo_data['params'][CONF_ACCESS_TOKEN_EXPIRES],
-            # debug=False
+            refresh_token=refresh_token,
+            access_token=access_token,
+            access_token_expires=access_token_expires,
+            # debug=True
         )
 
     except requests.exceptions.ConnectionError as err:
