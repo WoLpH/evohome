@@ -41,7 +41,7 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.helpers.entity import Entity
 # from homeassistant.helpers.temperature import display_temp as show_temp
 
-# QUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/debug-version.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; ZXDEL
+# QUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/debug-version.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
 REQUIREMENTS = ['evohomeclient==0.2.8']
 
 _LOGGER = logging.getLogger(__name__)
@@ -76,6 +76,10 @@ CV_FLOAT2 = vol.All(vol.Coerce(float), vol.Range(min=35, max=85))
 CONF_REFRESH_TOKEN = 'refresh_token'
 CONF_ACCESS_TOKEN = 'access_token'
 CONF_ACCESS_TOKEN_EXPIRES = 'access_token_expires'
+
+CONF_SECRETS = [CONF_USERNAME, CONF_PASSWORD,
+                CONF_REFRESH_TOKEN,
+                CONF_ACCESS_TOKEN, CONF_ACCESS_TOKEN_EXPIRES]
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -190,9 +194,10 @@ def setup(hass, hass_config):
         minutes=(scan_interval.total_seconds() + 59) // 60)
 
     if _LOGGER.isEnabledFor(logging.DEBUG):  # then redact username, password
+#       tmp = {k: evo_data['params'][k] for k not in CONF_SECRETS}
         tmp = dict(evo_data['params'])
-        tmp[CONF_USERNAME] = 'REDACTED'
-        tmp[CONF_PASSWORD] = 'REDACTED'
+        for parameter in CONF_SECRETS:
+            tmp[parameter] = 'REDACTED' if tmp[parameter] else None
 
         _LOGGER.debug("setup(): Configuration parameters: %s", tmp)
 
@@ -211,19 +216,23 @@ def setup(hass, hass_config):
         access_token_expires = datetime.strptime(
             access_token_expires, '%Y-%m-%d %H:%M:%S')
 
-    _LOGGER.warn("refresh_token: %s", refresh_token)                             # TODO: debug code, delete me
-    _LOGGER.warn("access_token: %s", access_token)                               # TODO: debug code, delete me
-    _LOGGER.warn("access_token_expires: %s", access_token_expires)               # TODO: debug code, delete me
-
     try:
+        _LOGGER.warn("refresh_token: %s", refresh_token)                         # TODO: debug code, delete me
+        _LOGGER.warn("access_token: %s", access_token)                           # TODO: debug code, delete me
+        _LOGGER.warn("access_token_expires: %s", access_token_expires)           # TODO: debug code, delete me
+
         client = evo_data['client'] = EvohomeClient(
             evo_data['params'][CONF_USERNAME],
             evo_data['params'][CONF_PASSWORD],
-            refresh_token=refresh_token,
-            access_token=access_token,
-            access_token_expires=access_token_expires,
-            # debug=True
+#           refresh_token=refresh_token,
+#           access_token=access_token,
+#           access_token_expires=access_token_expires,
+            debug=False
         )
+
+        # _LOGGER.warn("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
+        # _LOGGER.warn("access_token: %s", client.access_token)                    # TODO: debug code, delete me
+        # _LOGGER.warn("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
 
     except requests.exceptions.ConnectionError as err:
         _LOGGER.error(
@@ -272,10 +281,6 @@ def setup(hass, hass_config):
     finally:  # Redact username, password as no longer needed
         evo_data['params'][CONF_USERNAME] = 'REDACTED'
         evo_data['params'][CONF_PASSWORD] = 'REDACTED'
-
-    _LOGGER.warn("refresh_token: %s", client.refresh_token)                      # TODO: debug code, delete me
-    _LOGGER.warn("access_token: %s", client.access_token)                        # TODO: debug code, delete me
-    _LOGGER.warn("access_token_expires: %s", client.access_token_expires)        # TODO: debug code, delete me
 
     evo_data['schedules'] = {}
     evo_data['status'] = {}
