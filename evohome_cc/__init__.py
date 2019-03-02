@@ -41,7 +41,7 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.helpers.entity import Entity
 # from homeassistant.helpers.temperature import display_temp as show_temp
 
-REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/improve_debug.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
+REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/improve_debug.zip#evohomeclient==0.2.9']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
 # REQUIREMENTS = ['evohomeclient==0.2.8']
 
 _LOGGER = logging.getLogger(__name__)
@@ -225,15 +225,15 @@ def setup(hass, hass_config):
         client = evo_data['client'] = EvohomeClient(
             evo_data['params'][CONF_USERNAME],
             evo_data['params'][CONF_PASSWORD],
-            # refresh_token=refresh_token,
-            # access_token=access_token,
-            # access_token_expires=access_token_expires,
+            refresh_token=refresh_token,
+            access_token=access_token,
+            access_token_expires=access_token_expires,
             debug=False
         )
 
-        # _LOGGER.info("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
-        # _LOGGER.info("access_token: %s", client.access_token)                    # TODO: debug code, delete me
-        # _LOGGER.info("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
+        _LOGGER.info("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
+        _LOGGER.info("access_token: %s", client.access_token)                    # TODO: debug code, delete me
+        _LOGGER.info("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
 
     except requests.exceptions.ConnectionError as err:
         _LOGGER.error(
@@ -280,8 +280,9 @@ def setup(hass, hass_config):
         return False  # unable to continue
 
     finally:  # Redact username, password as no longer needed
-        evo_data['params'][CONF_USERNAME] = 'REDACTED'
-        evo_data['params'][CONF_PASSWORD] = 'REDACTED'
+        for parameter in CONF_SECRETS:
+            evo_data['params'][parameter] = 'REDACTED' \
+                if evo_data['params'][parameter] else None
 
     evo_data['schedules'] = {}
     evo_data['status'] = {}
@@ -450,7 +451,7 @@ class EvoDevice(Entity):
     @property
     def name(self) -> str:
         """Return the name to use in the frontend UI."""
-        _LOGGER.debug("name(%s) = %s", self._id + " [" + self._name + "]", self._name)                      # noqa: E501; pylint: disable=line-too-long; ZXDEL
+#       _LOGGER.debug("name(%s) = %s", self._id + " [" + self._name + "]", self._name)                      # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._name
 
     @property
@@ -467,7 +468,7 @@ class EvoDevice(Entity):
         evohome child devices should never be polled.
         """
 #       _LOGGER.debug("should_poll(%s) = %s", self._id + " [" + self._name + "]", self._type == EVO_PARENT)  # noqa: E501; pylint: disable=line-too-long; ZXDEL
-        return self._type == EVO_PARENT
+        return self._should_poll
 
     @property
     def available(self) -> bool:
@@ -629,10 +630,9 @@ class EvoChildDevice(EvoDevice):
             self._type = EVO_CHILD | EVO_DHW
             self._icon = "mdi:thermometer-lines"
 
-        else:  # this should never happen!
-            self._type = EVO_UNKNOWN
-
         self._status = {}
+
+        self._should_poll = False
 
         # children update their schedules themselves, unlike everything else
         self._schedule = evo_data['schedules'][self._id] = {}

@@ -55,15 +55,15 @@ ATTR_UNTIL = 'until'
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_platform(hass, hass_config, async_add_entities,
-                               discovery_info=None):
+async def async_setup_platform(hass, hass_config, async_add_entities,            # pylint: disable=unused-argument
+                               discovery_info=None):                             # pylint: disable=unused-argument
     """Create the DHW controller."""
     evo_data = hass.data[DATA_EVOHOME]
 
     client = evo_data['client']
     loc_idx = evo_data['params'][CONF_LOCATION_IDX]
 
-    tcs_obj_ref = client.locations[loc_idx]._gateways[0]._control_systems[0]    # noqa E501; pylint: disable=protected-access
+    tcs_obj_ref = client.locations[loc_idx]._gateways[0]._control_systems[0]     # noqa E501; pylint: disable=protected-access
 
     _LOGGER.info(
         "setup(): Found DHW device, id: %s (%s)",

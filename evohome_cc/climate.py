@@ -51,8 +51,8 @@ ATTR_UNTIL = 'until'
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_platform(hass, hass_config, async_add_entities,
-                               discovery_info=None):
+async def async_setup_platform(hass, hass_config, async_add_entities,            # pylint: disable=unused-argument
+                               discovery_info=None):                             # pylint: disable=unused-argument
     """Create the Controller, and its Zones, if any."""
     evo_data = hass.data[DATA_EVOHOME]
 
@@ -553,6 +553,8 @@ class EvoController(EvoDevice, ClimateDevice):
         self._supported_features = \
             SUPPORT_OPERATION_MODE | \
             SUPPORT_AWAY_MODE
+
+        self._should_poll = True
 
         if _LOGGER.isEnabledFor(logging.DEBUG):
             _LOGGER.debug(
