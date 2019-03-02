@@ -209,7 +209,7 @@ def setup(hass, hass_config):
         access_token = access_token_expires = None
     else:
         access_token_expires = datetime.strptime(
-            access_token_expires, '%Y-%m-%d %H:%M:%S)
+            access_token_expires, '%Y-%m-%d %H:%M:%S')
 
     _LOGGER.warn("refresh_token: %s", refresh_token)                             # TODO: debug code, delete me
     _LOGGER.warn("access_token: %s", access_token)                               # TODO: debug code, delete me
