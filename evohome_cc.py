@@ -199,15 +199,15 @@ def setup(hass, hass_config):
     from evohomeclient2 import EvohomeClient
     _LOGGER.warn("setup(): API call [4 request(s)]: client.__init__()...")       # noqa: E501; pylint: disable=line-too-long; ZXDEL
 
-    refresh_token = evo_data['params'][CONF_REFRESH_TOKEN])
-    access_token = evo_data['params'][CONF_ACCESS_TOKEN])
+    refresh_token = evo_data['params'][CONF_REFRESH_TOKEN]
+    access_token = evo_data['params'][CONF_ACCESS_TOKEN]
     access_token_expires = evo_data['params'][CONF_ACCESS_TOKEN_EXPIRES]
-    
+
     if not refresh_token:
         refresh_token = None
     if not access_token or not access_token_expires:
         access_token = access_token_expires = None
-    
+
     _LOGGER.warn("refresh_token: %s", refresh_token)                             # TODO: debug code, delete me
     _LOGGER.warn("access_token: %s", access_token)                               # TODO: debug code, delete me
     _LOGGER.warn("access_token_expires: %s", access_token_expires)               # TODO: debug code, delete me
