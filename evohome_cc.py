@@ -94,9 +94,9 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_OFF_TEMP, default=5.0): CV_FLOAT1,
         vol.Optional(CONF_DHW_TEMP, default=DHW_TEMP): CV_FLOAT2,
 
-        vol.Optional(CONF_REFRESH_TOKEN, default=None): cv.string,
-        vol.Optional(CONF_ACCESS_TOKEN, default=None): cv.string,
-        vol.Optional(CONF_ACCESS_TOKEN_EXPIRES, default=None): cv.string,
+        vol.Optional(CONF_REFRESH_TOKEN, default=''): cv.string,
+        vol.Optional(CONF_ACCESS_TOKEN, default=''): cv.string,
+        vol.Optional(CONF_ACCESS_TOKEN_EXPIRES, default=''): cv.datetime,
     }),
 }, extra=vol.ALLOW_EXTRA)
 
