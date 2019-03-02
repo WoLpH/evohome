@@ -73,6 +73,10 @@ CONF_DHW_TEMP = 'dhw_target_temp'
 CV_FLOAT1 = vol.All(vol.Coerce(float), vol.Range(min=5, max=28))
 CV_FLOAT2 = vol.All(vol.Coerce(float), vol.Range(min=35, max=85))
 
+CONF_REFRESH_TOKEN = 'refresh_token'
+CONF_ACCESS_TOKEN = 'access_token'
+CONF_ACCESS_TOKEN_EXPIRES = 'access_token_expires'
+
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Required(CONF_USERNAME): cv.string,
@@ -89,6 +93,10 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_AWAY_TEMP, default=15.0): CV_FLOAT1,
         vol.Optional(CONF_OFF_TEMP, default=5.0): CV_FLOAT1,
         vol.Optional(CONF_DHW_TEMP, default=DHW_TEMP): CV_FLOAT2,
+
+        vol.Optional(CONF_REFRESH_TOKEN): cv.string,
+        vol.Optional(CONF_ACCESS_TOKEN): cv.string,
+        vol.Optional(CONF_ACCESS_TOKEN_EXPIRES): cv.string,
     }),
 }, extra=vol.ALLOW_EXTRA)
 
@@ -191,10 +199,17 @@ def setup(hass, hass_config):
     from evohomeclient2 import EvohomeClient
     _LOGGER.warn("setup(): API call [4 request(s)]: client.__init__()...")       # noqa: E501; pylint: disable=line-too-long; ZXDEL
 
+    _LOGGER.warn("refresh_token: %s", evo_data['params'][CONF_REFRESH_TOKEN])                # TODO: debug code, delete me
+    _LOGGER.warn("access_token: %s", evo_data['params'][CONF_ACCESS_TOKEN])                  # TODO: debug code, delete me
+    _LOGGER.warn("access_token_expires: %s", evo_data['params'][CONF_ACCESS_TOKEN_EXPIRES])  # TODO: debug code, delete me
+
     try:
         client = evo_data['client'] = EvohomeClient(
             evo_data['params'][CONF_USERNAME],
             evo_data['params'][CONF_PASSWORD],
+            refresh_token=evo_data['params'][CONF_REFRESH_TOKEN],
+            access_token=evo_data['params'][CONF_ACCESS_TOKEN],
+            access_token_expires=evo_data['params'][CONF_ACCESS_TOKEN_EXPIRES],
             # debug=False
         )
 
@@ -245,6 +260,10 @@ def setup(hass, hass_config):
     finally:  # Redact username, password as no longer needed
         evo_data['params'][CONF_USERNAME] = 'REDACTED'
         evo_data['params'][CONF_PASSWORD] = 'REDACTED'
+
+    _LOGGER.warn("refresh_token: %s", client.refresh_token)                      # TODO: debug code, delete me
+    _LOGGER.warn("access_token: %s", client.access_token)                        # TODO: debug code, delete me
+    _LOGGER.warn("access_token_expires: %s", client.access_token_expires)        # TODO: debug code, delete me
 
     evo_data['schedules'] = {}
     evo_data['status'] = {}
@@ -488,7 +507,7 @@ class EvoDevice(Entity):
 # fashion, even though evohome's implementation of these modes are subtly
 # different - this will allow tight integration with the HA landscape e.g.
 # Alexa/Google integration
-        feats = self._supported_features
+#       feats = self._supported_features
 #       _LOGGER.debug("supported_features(%s) = %s", self._id, feats)            # noqa: E501; pylint: disable=line-too-long; ZXDEL
         return self._supported_features
 
@@ -771,7 +790,7 @@ class EvoChildDevice(EvoDevice):
 
 # Part 2: schedule - retrieved here as required
         if self._params[CONF_USE_SCHEDULES]:
-#           self._schedule = evo_data['schedules'][self._id]
+            # lf._schedule = evo_data['schedules'][self._id]
 
             # Use cached schedule if < 60 mins old
             timeout = datetime.now() + timedelta(seconds=59)
