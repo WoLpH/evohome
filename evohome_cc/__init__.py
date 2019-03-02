@@ -41,8 +41,8 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.helpers.entity import Entity
 # from homeassistant.helpers.temperature import display_temp as show_temp
 
-# REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/improve_debug.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
-REQUIREMENTS = ['evohomeclient==0.2.8']
+REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/improve_debug.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
+# REQUIREMENTS = ['evohomeclient==0.2.8']
 
 _LOGGER = logging.getLogger(__name__)
 
