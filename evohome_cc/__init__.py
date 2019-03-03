@@ -8,7 +8,7 @@ https://github.com/zxdavb/evohome/
 """
 # pylint: disable=deprecated-method; ZXDEL
 
-__version__ = '0.9.8'
+__version__ = '0.9.9'
 
 # Glossary:
 #   TCS - temperature control system (a.k.a. Controller, Parent), which can
@@ -41,9 +41,9 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.helpers.entity import Entity
 # from homeassistant.helpers.temperature import display_temp as show_temp
 
-EVOHOMECLIENT_API_VER = '0.2.9'
-# REQUIREMENTS = ['evohomeclient==0.2.8']
-REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/bugfix_and_refactor.zip#evohomeclient==0.2.9']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
+EVOHOMECLIENT_API_VER = '0.2.8'
+REQUIREMENTS = ['evohomeclient==0.2.8']
+# REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/bugfix_and_refactor.zip#evohomeclient==0.2.9']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
 
 _LOGGER = logging.getLogger(__name__)
 

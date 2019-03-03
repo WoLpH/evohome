@@ -1,6 +1,6 @@
 {
     "evohome_cc": {
-        "version":         "0.9.8",
+        "version":         "0.9.9",
         "local_location":  "custom_components/evohome_cc/__init__.py",
         "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/v0.9.8/evohome_cc/__init__.py",
         "visit_repo":      "https://github.com/zxdavb/evohome"
