@@ -41,8 +41,9 @@ from homeassistant.helpers.dispatcher import (
 from homeassistant.helpers.entity import Entity
 # from homeassistant.helpers.temperature import display_temp as show_temp
 
-REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/bugfix_and_refactor.zip#evohomeclient==0.2.8']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
+EVOHOMECLIENT_API_VER = '0.2.9'
 # REQUIREMENTS = ['evohomeclient==0.2.8']
+REQUIREMENTS = ['https://github.com/zxdavb/evohome-client/archive/bugfix_and_refactor.zip#evohomeclient==0.2.9']  # noqa: E501; pylint: disable=line-too-long; TODO: delete me
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -222,18 +223,25 @@ def setup(hass, hass_config):
         _LOGGER.info("access_token: %s", access_token)                           # TODO: debug code, delete me
         _LOGGER.info("access_token_expires: %s", access_token_expires)           # TODO: debug code, delete me
 
-        client = evo_data['client'] = EvohomeClient(
-            evo_data['params'][CONF_USERNAME],
-            evo_data['params'][CONF_PASSWORD],
-            refresh_token=refresh_token,
-            access_token=access_token,
-            access_token_expires=access_token_expires,
-#           debug=True
-        )
+        if EVOHOMECLIENT_API_VER == '0.2.8':
+            client = evo_data['client'] = EvohomeClient(
+                evo_data['params'][CONF_USERNAME],
+                evo_data['params'][CONF_PASSWORD],
+    #           debug=True
+            )
+        else:
+            client = evo_data['client'] = EvohomeClient(
+                evo_data['params'][CONF_USERNAME],
+                evo_data['params'][CONF_PASSWORD],
+                refresh_token=refresh_token,
+                access_token=access_token,
+                access_token_expires=access_token_expires,
+    #           debug=True
+            )
 
-        _LOGGER.info("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
-        _LOGGER.info("access_token: %s", client.access_token)                    # TODO: debug code, delete me
-        _LOGGER.info("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
+            _LOGGER.info("refresh_token: %s", client.refresh_token)                  # TODO: debug code, delete me
+            _LOGGER.info("access_token: %s", client.access_token)                    # TODO: debug code, delete me
+            _LOGGER.info("access_token_expires: %s", client.access_token_expires)    # TODO: debug code, delete me
 
     except requests.exceptions.ConnectionError as err:
         _LOGGER.error(
