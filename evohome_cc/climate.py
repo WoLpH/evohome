@@ -501,7 +501,9 @@ class EvoZone(EvoChildDevice, ClimateDevice):
                 )
 
         else:
-            _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", temp)
+#           _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", temp)
+            pass
+
         return temp
 
     @property
@@ -587,7 +589,7 @@ class EvoController(EvoDevice, ClimateDevice):
         else:  # usually = self.current_operation
             state = self.current_operation
 
-        _LOGGER.debug("state(%s) = %s", self._id + " [" + self._name + "]", state)
+#       _LOGGER.debug("state(%s) = %s", self._id + " [" + self._name + "]", state)
         return state
 
     @property
