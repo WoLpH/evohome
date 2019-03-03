@@ -1,23 +1,20 @@
 {
     "evohome_cc": {
-        "version":         "0.9.6",
-        "local_location":  "custom_components/evohome_cc.py",
-        "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/master/evohome_cc.py",
-        "changelog":       "https://raw.githubusercontent.com/zxdavb/evohome/master/CHANGELOG.md",
+        "version":         "0.9.8",
+        "local_location":  "custom_components/evohome_cc/__init__.py",
+        "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/v0.9.8/evohome_cc/__init__.py",
         "visit_repo":      "https://github.com/zxdavb/evohome"
     },
     "climate.evohome_cc": {
-        "version":         "0.9.6",
-        "local_location":  "custom_components/climate/evohome_cc.py",
-        "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/master/climate/evohome_cc.py",
-        "changelog":       "https://raw.githubusercontent.com/zxdavb/evohome/master/CHANGELOG.md",
+        "version":         "0.9.8",
+        "local_location":  "custom_components/evohome_cc/climate.py",
+        "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/v0.9.8/evohome_cc/climate.py",
         "visit_repo":      "https://github.com/zxdavb/evohome"
     },
     "water_heater.evohome_cc": {
-        "version":         "0.9.6",
-        "local_location":  "custom_components/water_heater/evohome_cc.py",
-        "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/master/water_heater/evohome_cc.py",
-        "changelog":       "https://raw.githubusercontent.com/zxdavb/evohome/master/CHANGELOG.md",
+        "version":         "0.9.8",
+        "local_location":  "custom_components/evohome_cc/water_heater.py",
+        "remote_location": "https://raw.githubusercontent.com/zxdavb/evohome/v0.9.8/evohome_cc/water_heater.py",
         "visit_repo":      "https://github.com/zxdavb/evohome"
     }
 }

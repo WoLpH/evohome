@@ -8,7 +8,7 @@ https://github.com/zxdavb/evohome/
 """
 # pylint: disable=deprecated-method, unused-import; ZXDEL
 
-__version__ = '0.9.6'
+__version__ = '0.9.8'
 
 from datetime import datetime, timedelta
 import logging
