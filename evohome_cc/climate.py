@@ -169,7 +169,9 @@ class EvoZone(EvoChildDevice, ClimateDevice):
                     self._status['setpointStatus']['setpointMode']
                 )
         else:
-            _LOGGER.debug("state(%s) = %s", self._id, state)
+#           _LOGGER.debug("state(%s) = %s", self._id + " [" + self._name + "]", state)
+            pass
+
         return state
 
     def _set_temperature(self, temperature, until=None):
@@ -596,7 +598,7 @@ class EvoController(EvoDevice, ClimateDevice):
     def is_away_mode_on(self):
         """Return true if away mode is on."""
         away_mode = self._status['systemModeStatus']['mode'] == EVO_AWAY
-        _LOGGER.debug("is_away_mode_on(%s) = %s", self._id + " [" + self._name + "]", away_mode)
+#       _LOGGER.debug("is_away_mode_on(%s) = %s", self._id + " [" + self._name + "]", away_mode)
         return away_mode
 
     def async_set_operation_mode(self, operation_mode):

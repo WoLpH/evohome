@@ -99,7 +99,7 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
         """TBD: Return None, as there is no target temp exposed via the api."""
         temp = self._params[CONF_DHW_TEMP]
 
-        _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", temp)
+#       _LOGGER.debug("target_temperature(%s) = %s", self._id + " [" + self._name + "]", temp)
         return temp
 
     def _set_dhw_state(self, state=None, mode=None, until=None):
@@ -199,7 +199,9 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
                     dhw_state
                 )
         else:
-            _LOGGER.debug("state(%s) = %s", self._id, state)
+#           _LOGGER.debug("state(%s) = %s", self._id, state)
+            pass
+
         return state
 
     @property
@@ -207,7 +209,7 @@ class EvoDHW(EvoChildDevice, WaterHeaterDevice):
         """Return True if DHW is on (albeit regulated by thermostat)."""
         is_on = (self.state == DHW_STATES[STATE_ON])
 
-        _LOGGER.debug("is_on(%s) = %s", self._id + " [" + self._name + "]", is_on)
+#       _LOGGER.debug("is_on(%s) = %s", self._id + " [" + self._name + "]", is_on)
         return is_on
 
     def turn_on(self):
