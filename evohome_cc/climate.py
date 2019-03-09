@@ -15,11 +15,17 @@ import logging
 
 import requests.exceptions
 
-from homeassistant.components.climate import (
-    SUPPORT_AWAY_MODE, SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE,
-    SUPPORT_ON_OFF,
-    ClimateDevice
-)
+try:
+    from homeassistant.components.climate.const import (
+        SUPPORT_AWAY_MODE, SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE,
+        SUPPORT_ON_OFF,
+    )
+except ImportError:
+    from homeassistant.components.climate import (
+        SUPPORT_AWAY_MODE, SUPPORT_OPERATION_MODE, SUPPORT_TARGET_TEMPERATURE,
+        SUPPORT_ON_OFF,
+    )
+from homeassistant.components.climate import ClimateDevice
 from homeassistant.const import (
     CONF_SCAN_INTERVAL,
     # STATE_OFF, STATE_ON,
